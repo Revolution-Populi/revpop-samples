@@ -1,0 +1,35 @@
+{
+  "name": "@Revolution-Populi/revpop-samples",
+  "version": "0.1.0",
+  "description": "Examples of using the blockchain.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --no-deprecation ./index.js",
+    "single": "node --no-deprecation",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint \"**/*.js\" --ignore-pattern node_modules/"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Revolution-Populi/revpop-samples.git"
+  },
+  "keywords": [],
+  "author": "Revolution Populi Limited <robert.b.rosenthal@gmail.com>",
+  "contributors": [
+    "Robert Rosenthal <robert.b.rosenthal@gmail.com> (https://github.com/Revolution-Populi)"
+  ],
+  "license": "GPLv3",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "browserify-aes": "^1.2.0",
+    "dotenv": "^8.2.0",
+    "mongodb": "^3.5.2",
+    "@Revolution-Populi/revpopjs": "^0.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0"
+  }
+}

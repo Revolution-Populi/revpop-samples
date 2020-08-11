@@ -1,0 +1,23 @@
+version: "3"
+services:
+  blockchain:
+    image: docker.pkg.github.com/revolution-populi/revpop-core/blockchain:0.1
+    expose:
+    - 8090
+  cloud:
+    image: mongo:3
+    expose:
+    - 27017
+  samples:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: revpop-samples
+    links:
+      - blockchain
+      - cloud
+    volumes:
+      # Uncomment /app volume to sync project files with the container. Adjust the .env file to work in the container.
+      # - ./:/app
+      - /app/node_modules
+      - /app/demo/node_modules
