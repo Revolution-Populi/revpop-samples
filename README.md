@@ -27,9 +27,9 @@ docker-compose down
 
 Requirements:
 
-* NodeJS
-* MongoDB
-* RevPop Blockchain
+* NodeJS 10+
+* MongoDB 3+
+* RevPop Blockchain https://github.com/Revolution-Populi/revpop-core
 
 Follow the steps in order to run samples on your machine.
 
