@@ -17,7 +17,7 @@
  */
 
 require('dotenv').config();
-const { PrivateKey } = require('@Revolution-Populi/revpopjs');
+const { PrivateKey } = require('@revolutionpopuli/revpopjs');
 const revpop = require('./lib/revpop');
 
 async function get_witness(witness_acc_name) {

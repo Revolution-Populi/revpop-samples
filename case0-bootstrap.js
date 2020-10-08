@@ -17,7 +17,7 @@
  */
 
 require('dotenv').config();
-const { PrivateKey } = require('@Revolution-Populi/revpopjs');
+const { PrivateKey } = require('@revolutionpopuli/revpopjs');
 const revpop = require('./lib/revpop');
 
 async function case0_bootstrap() {

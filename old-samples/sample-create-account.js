@@ -17,7 +17,7 @@
  */
 
 require('dotenv').config({ path: '../.env' });
-const { key, PrivateKey } = require('@Revolution-Populi/revpopjs');
+const { key, PrivateKey } = require('@revolutionpopuli/revpopjs');
 const revpop = require('../lib/revpop');
 
 async function sample_create_account() {

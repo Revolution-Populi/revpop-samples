@@ -18,7 +18,7 @@
 
 const {
     key, PrivateKey, Login
-} = require('@Revolution-Populi/revpopjs');
+} = require('@revolutionpopuli/revpopjs');
 
 function sample_create_keys() {
     const seed = "THIS IS A TERRIBLE BRAINKEY SEED WORD SEQUENCE";

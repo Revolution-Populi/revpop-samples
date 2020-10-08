@@ -1,6 +1,6 @@
 {
-  "name": "@Revolution-Populi/revpop-samples",
-  "version": "0.1.0",
+  "name": "@revolutionpopuli/revpop-samples",
+  "version": "0.1.1",
   "description": "Examples of using the blockchain.",
   "main": "index.js",
   "scripts": {
@@ -8,9 +8,6 @@
     "single": "node --no-deprecation",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint \"**/*.js\" --ignore-pattern node_modules/"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
   },
   "repository": {
     "type": "git",
@@ -23,11 +20,11 @@
   ],
   "license": "GPLv3",
   "dependencies": {
-    "colors": "^1.4.0",
+    "@revolutionpopuli/revpopjs": "^0.1.1",
     "browserify-aes": "^1.2.0",
+    "colors": "^1.4.0",
     "dotenv": "^8.2.0",
-    "mongodb": "^3.5.2",
-    "@Revolution-Populi/revpopjs": "^0.1.0"
+    "mongodb": "^3.5.2"
   },
   "devDependencies": {
     "eslint": "^6.8.0"

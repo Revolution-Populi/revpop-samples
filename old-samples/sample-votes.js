@@ -19,7 +19,7 @@
 require('dotenv').config({ path: '../.env' });
 const assert = require('assert');
 const path = require('path');
-const { PrivateKey } = require('@Revolution-Populi/revpopjs');
+const { PrivateKey } = require('@revolutionpopuli/revpopjs');
 const { make_content_key } = require('../lib/crypto');
 const revpop = require('../lib/revpop');
 

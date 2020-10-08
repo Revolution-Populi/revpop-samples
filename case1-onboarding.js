@@ -17,7 +17,7 @@
  */
 
 require('dotenv').config();
-const { PrivateKey } = require('@Revolution-Populi/revpopjs');
+const { PrivateKey } = require('@revolutionpopuli/revpopjs');
 const CloudStorageClient = require('./lib/cloud-storage-client');
 const revpop = require('./lib/revpop');
 const {

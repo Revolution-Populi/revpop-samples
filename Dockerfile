@@ -6,7 +6,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-ADD package.json .npmrc /app/
+ADD package.json /app/
 RUN cd /app && npm install && \
     echo 'BLOCKCHAIN_URL=ws://blockchain:8090\nCLOUD_URL=mongodb://cloud:27017' > /app/.env
 ADD . /app

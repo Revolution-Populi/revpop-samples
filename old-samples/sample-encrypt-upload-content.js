@@ -23,7 +23,7 @@ const path = require('path');
 const stream = require('stream');
 const util = require('util');
 const pipeline = util.promisify(stream.pipeline);
-const { key } = require('@Revolution-Populi/revpopjs');
+const { key } = require('@revolutionpopuli/revpopjs');
 const CloudStorageClient = require('../lib/cloud-storage-client');
 const {
     encrypt_object,

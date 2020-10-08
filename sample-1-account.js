@@ -18,7 +18,7 @@
 
 require('dotenv').config();
 const assert = require('assert');
-const { PrivateKey } = require('@Revolution-Populi/revpopjs');
+const { PrivateKey } = require('@revolutionpopuli/revpopjs');
 const { create_common_account_keys } = require('./lib/keys');
 const revpop = require('./lib/revpop');
 

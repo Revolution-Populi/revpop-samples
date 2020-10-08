@@ -18,7 +18,7 @@
 
 require('dotenv').config({ path: '../.env' });
 const CloudStorageClient = require('../lib/cloud-storage-client');
-const { key } = require('@Revolution-Populi/revpopjs');
+const { key } = require('@revolutionpopuli/revpopjs');
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');

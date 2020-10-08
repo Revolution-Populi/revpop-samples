@@ -20,7 +20,7 @@ require('dotenv').config();
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const { PrivateKey } = require('@Revolution-Populi/revpopjs');
+const { PrivateKey } = require('@revolutionpopuli/revpopjs');
 const { computeBufSha256 } = require('./lib/signature');
 const CloudStorageClient = require('./lib/cloud-storage-client');
 const {

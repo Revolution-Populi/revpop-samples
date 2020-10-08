@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const { key } = require('@Revolution-Populi/revpopjs');
+const { key } = require('@revolutionpopuli/revpopjs');
 const assert = require('assert');
 const { computeSha256, computeSignOfSha256, verifySignOfSha256 } = require('../lib/signature');
 const {

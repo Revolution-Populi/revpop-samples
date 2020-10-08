@@ -22,7 +22,7 @@ const path = require('path');
 const stream = require('stream');
 const util = require('util');
 const pipeline = util.promisify(stream.pipeline);
-const { PrivateKey } = require('@Revolution-Populi/revpopjs');
+const { PrivateKey } = require('@revolutionpopuli/revpopjs');
 const {
     encrypt_object,
     make_content_key,
