@@ -1,5 +1,6 @@
 .env
 /.idea
 /.vscode
+/docker-compose.override.yml
 /node_modules
 /package-lock.json

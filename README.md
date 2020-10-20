@@ -23,6 +23,24 @@ To clean up the environment after use, run this command:
 docker-compose down
 ```
 
+### Development configuration
+
+Create a file named `docker-compose.override.yml` where you can specify any adjustments you need, for example:
+
+```
+version: "3"
+services:
+  blockchain:
+    image: revpop-core
+    ports:
+    - 8090:8090
+  samples:
+    volumes:
+    - ./:/app
+    - /app/node_modules
+    - /app/demo/node_modules
+```
+
 ## Installation
 
 Requirements:
