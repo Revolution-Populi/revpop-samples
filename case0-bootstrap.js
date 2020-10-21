@@ -41,33 +41,19 @@ async function case0_bootstrap() {
         console.log(``);
 
         console.log(`Getting balance ${revpop.config.balance_address}...`);
-        const balances = await revpop.db_exec('get_balance_objects', [ revpop.config.balance_address ]);
-        if (balances.length === 1) {
-            const init_balance = balances[0];
+        const init_balance = await revpop.query_balance(revpop.config.balance_address);
+        if (init_balance) {
             console.log(`Balance ${init_balance.owner} ${init_balance.id} ` +
                         `${init_balance.balance.amount} ${init_balance.balance.asset_id}`);
             console.log(``);
 
             console.log(`Account ${registrar.acc.name} claim balance...`);
-            await revpop.transaction(registrar.key, 'balance_claim', {
-                fee: revpop.no_fee(),
-                deposit_to_account: registrar.acc.id,
-                balance_to_claim: init_balance.id,
-                balance_owner_key: registrar.key.toPublicKey().toPublicKeyString(),
-                total_claimed: {
-                    amount: init_balance.balance.amount,
-                    asset_id: init_balance.balance.asset_id
-                }
-            });
+            await revpop.claim_balance(registrar, init_balance);
             console.log(`Balance of account ${registrar.acc.name} claimed`);
             console.log(``);
 
             console.log(`Upgrading registrar account ${registrar.acc.name}...`);
-            await revpop.transaction(registrar.key, 'account_upgrade', {
-                fee: revpop.no_fee(),
-                account_to_upgrade: registrar.acc.id,
-                upgrade_to_lifetime_member: true
-            });
+            await revpop.upgrade_account(registrar);
             console.log(`Registrar account ${registrar.acc.name} upgraded`);
             console.log(``);
 
