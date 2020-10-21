@@ -49,8 +49,16 @@ async function vote_for_witnesses(voter, witnesses_acc_names) {
     });
 }
 
+function sort_ids(arr) {
+    return arr.sort((a, b) => parseInt(a.split('.').pop()) - parseInt(b.split('.').pop()));
+}
+
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function log(title, text) {
+    console.log(`${(new Date).toLocaleTimeString()} ${title}: ${text}`);
 }
 
 async function case3_rdpos() {
@@ -60,6 +68,11 @@ async function case3_rdpos() {
         const network = await revpop.connect(connection_string);
         console.log(`Connected to network ${network.network_name}`);
         console.log(``);
+
+        // run init script if not done before
+        if (await revpop.query_balance(revpop.config.balance_address)) {
+            require('child_process').spawnSync(process.execPath, ['case0-bootstrap'], {stdio: [0, 1, 2]});
+        }
 
         console.log(`Initialize all accounts...`);
         const accounts = [
@@ -81,24 +94,53 @@ async function case3_rdpos() {
         console.log(`OK`);
         console.log(``);
 
+        const gp = await revpop.db_exec("get_global_properties");
+        const min = Math.ceil(gp.parameters.maintenance_interval / 60);
+
+        console.log(`Active witnesses change every ${min} min. (maintenance interval)`);
+        console.log(`At first, new witnesses are selected. They will be shown under "MAINTENANCE" header.`);
+        console.log(`Then the schedule is formed and new witnesses start their work. This will be shown as "NEW SCHEDULE".`);
         console.log(`Watching for witnesses...`);
         console.log(`Press Ctrl-C to exit`);
         console.log(``);
 
         let last_head_block_number = -1;
         let last_next_maintenance_time = null;
+        let last_schedule = null;
+        let fresh_blockchain_check = true;
         for (;;) {
             const dpo = await revpop.db_exec("get_dynamic_global_properties");
             if (last_head_block_number !== dpo.head_block_number) {
                 last_head_block_number = dpo.head_block_number;
-                console.log(`BLOCK: head_block_number ${dpo.head_block_number}, current_witness ${JSON.stringify(dpo.current_witness)}`);
+                log('BLOCK', `head_block_number ${dpo.head_block_number}, current_witness ${JSON.stringify(dpo.current_witness)}`);
+
+                // Handle a new maintenance interval
                 if (last_next_maintenance_time === null) {
                     last_next_maintenance_time = dpo.next_maintenance_time;
                 }
                 if (last_next_maintenance_time !== dpo.next_maintenance_time) {
                     last_next_maintenance_time = dpo.next_maintenance_time;
                     const gpo = await revpop.db_exec("get_global_properties");
-                    console.log(`MAINTENANCE: active_witnesses (count=${gpo.active_witnesses.length}) ${JSON.stringify(gpo.active_witnesses)}`);
+                    log('MAINTENANCE', `active_witnesses (count=${gpo.active_witnesses.length}) ${JSON.stringify(gpo.active_witnesses)}`);
+                }
+
+                // Handle the first schedule change after the new maintenance interval
+                const ws = await revpop.db_exec("get_witness_schedule");
+                const schedule = sort_ids(ws.current_shuffled_witnesses);
+                if (last_schedule === null) {
+                    last_schedule = schedule;
+                }
+                if (JSON.stringify(last_schedule) !== JSON.stringify(schedule)) {
+                    last_schedule = schedule;
+                    log('NEW SCHEDULE', `active_witnesses (count=${schedule.length}) ${JSON.stringify(schedule)}`);
+                }
+
+                // Show fresh blockchain message
+                if (fresh_blockchain_check) {
+                    fresh_blockchain_check = false;
+                    if (schedule.length === 1) {
+                        console.log('It looks like the blockchain has just been launched. The schedule will be formed shortly.');
+                    }
                 }
             }
             await sleep(500);
