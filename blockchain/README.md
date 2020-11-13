@@ -4,8 +4,8 @@ This instruction can be used to run the RevPop blockchain
 
 All genesis accounts (init* and nathan) have the same key:
 * Private key: `5KXbCDyCPL3eGX6xX5uJHVwoAYheF7L5fKf67oQocgJA8kNvVHF`
-* Public key: `REV6JaiMEZZ57Q75Xh3kVbJ4owX13p7f1kkV76B3xLNFuWHVbRSyZ`
-* Address: `REVBrWn6V3fn1KdCZRo4DVmrMq7MpTtic5CW`
+* Public key: `RVP6JaiMEZZ57Q75Xh3kVbJ4owX13p7f1kkV76B3xLNFuWHVbRSyZ`
+* Address: `RVPBrWn6V3fn1KdCZRo4DVmrMq7MpTtic5CW`
 
 New account has the key:
 * Private key: `5KAffU3Pw7RNJAJ3d1qUrJ6QPVb6UFx6CJ4MhgfoHL7YwYspHhs`
@@ -21,7 +21,7 @@ witness_node \
     --rpc-endpoint 127.0.0.1:8090 \
     --p2p-endpoint 127.0.0.1:1414 \
     --enable-stale-production \
-    --private-key ["REV6JaiMEZZ57Q75Xh3kVbJ4owX13p7f1kkV76B3xLNFuWHVbRSyZ","5KXbCDyCPL3eGX6xX5uJHVwoAYheF7L5fKf67oQocgJA8kNvVHF"] \
+    --private-key ["RVP6JaiMEZZ57Q75Xh3kVbJ4owX13p7f1kkV76B3xLNFuWHVbRSyZ","5KXbCDyCPL3eGX6xX5uJHVwoAYheF7L5fKf67oQocgJA8kNvVHF"] \
     --seed-nodes [] \
     -w \""1.6.1"\"
 ```
