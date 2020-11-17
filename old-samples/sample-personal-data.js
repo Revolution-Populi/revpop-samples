@@ -52,7 +52,7 @@ async function sample_personal_data() {
         fee: revpop.no_fee(),
         subject_account: subject_acc.id,
         operator_account: operator_acc.id,
-        url: "https://dev.bitshares.works/en/master/development/testnets/private_testnet-v2.html#starting-cli-wallet-to-create-cli-wallet",
+        url: "https://revolutionpopuli.com/wp-content/uploads/2020/10/Revolution-Populi-WP1.pdf",
         hash: "sqplkk2npv0haqpohdi92",
     });
     console.log(`Personal data ${pd_create_res} created`);

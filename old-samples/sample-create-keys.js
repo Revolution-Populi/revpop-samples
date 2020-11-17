@@ -37,7 +37,7 @@ function sample_create_keys() {
     // Generate keys by Login
     let roles = Login.get("roles");
     console.log(`Roles: ${JSON.stringify(roles)}`);
-    let { privKeys, pubKeys } = Login.generateKeys("someaccountname", "somereallylongpassword", null, "REV");
+    let { privKeys, pubKeys } = Login.generateKeys("someaccountname", "somereallylongpassword", null, "RVP");
     console.log(`Private keys: ${JSON.stringify(Object.keys(privKeys).map(keyName => privKeys[keyName].toWif()))}`);
     console.log(`Public keys: ${JSON.stringify(Object.keys(pubKeys).map(keyName => pubKeys[keyName].toString()))}`);
 }

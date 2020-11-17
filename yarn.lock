@@ -23,13 +23,21 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@revolutionpopuli/revpopjs@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@revolutionpopuli/revpopjs/-/revpopjs-0.2.2.tgz#c06b9f0468730f5215a279e094d0e69dabfe81f1"
-  integrity sha512-HuFJ/D7qululxy2iDMbPcyVh2EOUj0R6HOpeWfQdAdXsD5ZfYJtDZxEZVo3xv9TcDYqaBcRiqA7/7GOD3ltkbg==
+"@revolutionpopuli/revpopjs-ws@0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@revolutionpopuli/revpopjs-ws/-/revpopjs-ws-0.4.0.tgz#b4a73eb0346725ce7636a07e47e26cd5b9e975c5"
+  integrity sha512-Knt/djJSoVOhwIB/KeYnDsEBizmUrKQgSfhJ5wLQFN5IF/5yd1a+A40xVP2NZTHL7we7HPWvrgaiAm3eTLLurw==
   dependencies:
+    isomorphic-ws "^4.0.1"
+    ws "^4.1.0"
+
+"@revolutionpopuli/revpopjs@0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@revolutionpopuli/revpopjs/-/revpopjs-0.4.0.tgz#75ed5bd638eb92afaafdd6655cbec0c6b4eade77"
+  integrity sha512-QaG9JjucR/c6jRByUrIshI4YF4L0O7oM4ZMEzgT0yr1o+UuHpDm2710sMvbkn7xLhpxL9IET7+cHGXP4gRJQTg==
+  dependencies:
+    "@revolutionpopuli/revpopjs-ws" "0.4.0"
     bigi "1.4.2"
-    bitsharesjs-ws "^4.0.0"
     bs58 "4.0.1"
     bytebuffer "5.0.1"
     create-hash "1.2.0"
@@ -132,14 +140,6 @@ bigi@1.4.2, bigi@^1.1.0:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/bigi/-/bigi-1.4.2.tgz#9c665a95f88b8b08fc05cfd731f561859d725825"
   integrity sha1-nGZalfiLiwj8Bc/XMfVhhZ1yWCU=
-
-bitsharesjs-ws@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/bitsharesjs-ws/-/bitsharesjs-ws-4.0.0.tgz#344481b7d9830d227c15254350df19f127a57641"
-  integrity sha512-2+9D8xMjCBgaB+7Pokb9j1NmraWNyVAFtY0+9WlDzWtGiVmrsjpg/fpE6qeXN99/b300ub83WJunbOpDAIlzUQ==
-  dependencies:
-    isomorphic-ws "^4.0.1"
-    ws "^4.1.0"
 
 bl@^2.2.0:
   version "2.2.1"

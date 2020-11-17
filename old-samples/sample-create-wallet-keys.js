@@ -28,15 +28,15 @@ function sample_create_wallet_keys() {
         brain_key: "DAWUT BULLBAT CONGEAL PRIUS AMBAN SWAYFUL STROW ROUTER MOSTLY PUNTO FALTCHE WARSEL INSERT CINEMA MORONRY BURO",
         owner: {
             priv_key: "5JUR92r9BhKFwFXmkNDn26VURTaNouuCB9RKv4YdJGxuvDU8dXw",
-            pub_key: "REV5THrbGQG65FYCmyYxZPfkmZSyQw8LXv6JJd2pSuAri3znxgVzC",
+            pub_key: "RVP5THrbGQG65FYCmyYxZPfkmZSyQw8LXv6JJd2pSuAri3znxgVzC",
         },
         active: {
             priv_key: "5JbUcrw6SawrNBFADoSvHX8mxGgWgWaywEwEeV4gaktbcwUHCB2",
-            pub_key: "REV8S63oDiWRUUgrgvnVqpZbgcrmhNWsJ2EFbow1PtTPkfGagZkqT",
+            pub_key: "RVP8S63oDiWRUUgrgvnVqpZbgcrmhNWsJ2EFbow1PtTPkfGagZkqT",
         },
         memo: {
             priv_key: "5JBzaA9XLpyMCKsympdRd1kec5x1xUqmPnfCMHGSXTiVPQFiKmj",
-            pub_key: "REV5FnB8fWetaBDmYoPQkDtazxU1mvZHiApXHSRrkuiNSTnxcsji1",
+            pub_key: "RVP5FnB8fWetaBDmYoPQkDtazxU1mvZHiApXHSRrkuiNSTnxcsji1",
         },
     };
 
