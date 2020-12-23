@@ -329,18 +329,12 @@
     "count_non_member_votes": true,
     "allow_non_member_whitelists": false,
     "witness_pay_per_block": 1000000,
-    "worker_budget_per_day": "50000000000",
     "max_predicate_opcode": 1,
     "fee_liquidation_threshold": 10000000,
     "accounts_per_fee_scale": 1000,
     "account_fee_scale_bitshifts": 4,
     "max_authority_depth": 2,
-    "extensions": {
-      "updatable_htlc_options": {
-        "max_timeout_secs": 2592000,
-        "max_preimage_size": 1024000
-      }
-    }
+    "extensions": []
   },
   "initial_accounts": [
     {
@@ -467,7 +461,6 @@
       "owner_name": "init10"
     }
   ],
-  "initial_worker_candidates": [],
   "immutable_parameters": {
     "min_committee_member_count": 11,
     "min_witness_count": 11,
