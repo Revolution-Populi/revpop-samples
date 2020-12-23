@@ -31,10 +31,10 @@
     isomorphic-ws "^4.0.1"
     ws "^4.1.0"
 
-"@revolutionpopuli/revpopjs@0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@revolutionpopuli/revpopjs/-/revpopjs-0.4.0.tgz#75ed5bd638eb92afaafdd6655cbec0c6b4eade77"
-  integrity sha512-QaG9JjucR/c6jRByUrIshI4YF4L0O7oM4ZMEzgT0yr1o+UuHpDm2710sMvbkn7xLhpxL9IET7+cHGXP4gRJQTg==
+"@revolutionpopuli/revpopjs@0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@revolutionpopuli/revpopjs/-/revpopjs-0.4.1.tgz#842c6070b0f3278b5af574123abc8f27abcb9575"
+  integrity sha512-DC+d2Jt5DAaCtGnHgssW4psmYxHfNwVgmtFnSgC5QaG28XS2pB4K7AYf60HGzeaA5XII5UQdwpU8yX7pSp/Saw==
   dependencies:
     "@revolutionpopuli/revpopjs-ws" "0.4.0"
     bigi "1.4.2"

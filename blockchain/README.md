@@ -12,7 +12,7 @@ New account has the key:
 * Public key : `GPH8mT7XvtTARjdZQ9bqHRoJRMf7P7azFqTQACckaVenM2GmJyxLh`
 
 Change chain id in the `.env` file to:
-`CHAIN_ID=673332024bdbeac585bfaec340ad102537e3b84c24fd0f869a4d8a3e370174a1`
+`CHAIN_ID=3da3a128785cac2be918e634720795a1ca337a71533cb9f56e7a7391c5aa0614`
 
 Node command line:
 ```
