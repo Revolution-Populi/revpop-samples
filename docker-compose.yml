@@ -1,7 +1,10 @@
 version: "3"
 services:
   blockchain:
-    image: docker.pkg.github.com/revolution-populi/revpop-core/blockchain:0.4.1
+    build:
+      context: ./blockchain
+      dockerfile: Dockerfile
+    image: revpop-core-samples
     expose:
     - 8090
   cloud:
