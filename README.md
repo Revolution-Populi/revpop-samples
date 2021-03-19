@@ -16,7 +16,7 @@ To run all samples using Docker, issue a command:
 docker-compose run --rm samples node index.js
 ```
 
-This environment uses the pre-built *Revolution Populi Core Blockchain* docker image from [revpop-core](https://github.com/Revolution-Populi/revpop-core) and *Revolution Populi Blockchain library*  from [revpop-js](https://github.com/Revolution-Populi/revpop-js). If you would like to build these dependencies yourself, please refer to the respective links.
+This environment uses the pre-built *Revolution Populi Core Blockchain* docker image from [revpop-core](https://gallery.ecr.aws/revpop/revpop-core) and *Revolution Populi Blockchain library*  from [revpop-js](https://github.com/Revolution-Populi/revpop-js). If you would like to build these dependencies yourself, please refer to the respective links.
 
 To clean up the environment after use, run this command:
 ```
@@ -31,7 +31,7 @@ Create a file named `docker-compose.override.yml` where you can specify any adju
 version: "3"
 services:
   blockchain:
-    image: revpop-core
+    image: public.ecr.aws/revpop/revpop-core:latest
     ports:
     - 8090:8090
   samples:
@@ -47,7 +47,7 @@ Requirements:
 
 * NodeJS 10+
 * MongoDB 3+
-* RevPop Blockchain https://github.com/Revolution-Populi/revpop-core
+* RevPop Blockchain https://gallery.ecr.aws/revpop/revpop-core
 
 Follow the steps in order to run samples on your machine.
 
@@ -62,7 +62,7 @@ This repository was tested in the following environment:
 * Ubuntu 18.04 Linux
 * NodeJS 12
 * MongoDB 3
-* RevPop Blockchain latest release from https://github.com/Revolution-Populi/revpop-core/releases
+* RevPop Blockchain latest release from https://gallery.ecr.aws/revpop/revpop-core
 
 # Run samples
 
