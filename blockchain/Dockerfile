@@ -1,4 +1,4 @@
-FROM public.ecr.aws/i2p9w0c4/revpop-core:latest
+FROM public.ecr.aws/revpop/revpop-core:latest
 MAINTAINER The Revolution Populi Project
 
 # rpc service:

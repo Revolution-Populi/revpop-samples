@@ -21,6 +21,7 @@ const assert = require('assert');
 const { PrivateKey } = require('@revolutionpopuli/revpopjs');
 const { create_common_account_keys } = require('./lib/keys');
 const revpop = require('./lib/revpop');
+const pk = PrivateKey.fromWif('5KXbCDyCPL3eGX6xX5uJHVwoAYheF7L5fKf67oQocgJA8kNvVHF');
 
 async function sample_1_account() {
     /*************************************************************************
@@ -74,7 +75,7 @@ async function sample_1_account() {
         nick: 'registrar',
         name: 'nathan',
         acc: await revpop.db_exec('get_account_by_name', 'nathan'),
-        key: PrivateKey.fromWif('5KXbCDyCPL3eGX6xX5uJHVwoAYheF7L5fKf67oQocgJA8kNvVHF')
+        key: pk
     };
     console.log(`Account ${registrar.nick} ${registrar.name} ${registrar.acc.id}`);
     const testuser = {
@@ -88,6 +89,13 @@ async function sample_1_account() {
     };
     console.log(`Account ${testuser.nick} ${testuser.name} ${testuser.acc ? testuser.acc.id : '[no account yet]'}`);
     console.log(``);
+
+    const init1 = {
+        nick: 'init1',
+        name: 'init1',
+        acc: await revpop.db_exec('get_account_by_name', 'init1'),
+        key: pk
+    };
 
     // Get balance object and claim it if any and upgrade registrar account
     console.log(`Getting balance ${revpop.config.balance_address}...`);
@@ -110,6 +118,11 @@ async function sample_1_account() {
         console.log(`Upgrading registrar account ${registrar.acc.name}...`);
         await revpop.upgrade_account(registrar);
         console.log(`Registrar account ${registrar.acc.name} upgraded`);
+        console.log(``);
+
+        // Add balance to demo account
+        console.log(`Transfer RVP to account ${init1.acc.name}...`);
+        await revpop.transfer(registrar, init1, 1000 * 10**5);
         console.log(``);
     }
 

@@ -8,7 +8,7 @@ RUN apt-get update \
 WORKDIR /app
 ADD package.json /app/
 RUN cd /app && npm install && \
-    echo 'BLOCKCHAIN_URL=ws://blockchain:8090\nCLOUD_URL=mongodb://cloud:27017' > /app/.env
+    echo 'BLOCKCHAIN_URL=ws://blockchain:8090\nCLOUD_URL=http://cloud:5001' > /app/.env
 ADD . /app
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
