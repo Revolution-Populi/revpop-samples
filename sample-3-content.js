@@ -20,10 +20,9 @@ require('dotenv').config();
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const { PrivateKey } = require('@revolutionpopuli/revpopjs');
+const { CloudStorage, IPFSAdapter, PrivateKey } = require('@revolutionpopuli/revpopjs');
 const { make_content_key, decrypt_object } = require('./lib/crypto');
 const revpop = require('./lib/revpop');
-const CloudStorageClient = require('./lib/cloud-storage-client');
 
 async function sample_3_content() {
     /*************************************************************************
@@ -46,7 +45,6 @@ async function sample_3_content() {
     console.log(`Connected to network ${network.network_name}`);
     console.log(``);
 
-    const storage = new CloudStorageClient(process.env.CLOUD_URL);
     const plaintext_input_file = path.join(__dirname, 'content/input.png');
 
     // Initialize accounts
@@ -65,6 +63,9 @@ async function sample_3_content() {
         }
         console.log(``);
     }
+
+    const storage = new CloudStorage(new IPFSAdapter(process.env.CLOUD_URL));
+    await storage.connect();
 
     // Save encrypted content to cloud storage
     const save_content_key = make_content_key();
@@ -175,6 +176,8 @@ async function sample_3_content() {
         console.log(`Content card:`, cc_by_id);
         console.log(``);
     }
+
+    await storage.disconnect();
 }
 
 async function finalizer() {

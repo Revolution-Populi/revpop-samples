@@ -1,6 +1,6 @@
 {
   "name": "@revolutionpopuli/revpop-samples",
-  "version": "0.4.1",
+  "version": "0.4.5",
   "description": "Examples of using the blockchain.",
   "main": "index.js",
   "scripts": {
@@ -20,13 +20,16 @@
   ],
   "license": "GPL-3.0",
   "dependencies": {
-    "@revolutionpopuli/revpopjs": "0.4.1",
+    "@revolutionpopuli/revpopjs": "0.4.6",
     "browserify-aes": "^1.2.0",
+    "bytebuffer": "^5.0.1",
     "colors": "^1.4.0",
     "dotenv": "^8.2.0",
-    "mongodb": "^3.5.2"
+    "mongodb": "^3.5.2",
+    "secure-random": "^1.1.1"
   },
   "devDependencies": {
+    "@babel/runtime": "^7.13.10",
     "eslint": "^6.8.0"
   }
 }
