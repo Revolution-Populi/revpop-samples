@@ -20,13 +20,8 @@ require('dotenv').config();
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const { PrivateKey } = require('@revolutionpopuli/revpopjs');
+const { CloudStorage, IPFSAdapter, PersonalData, PrivateKey } = require('@revolutionpopuli/revpopjs');
 const { computeBufSha256 } = require('./lib/signature');
-const CloudStorageClient = require('./lib/cloud-storage-client');
-const {
-    makeReferencePart, makeFullPersonalDataContent,
-    makeFullPersonalData, makePartialPersonalData, hashPersonalData
-} = require('./lib/personal_data');
 const revpop = require('./lib/revpop');
 
 async function sample_2_personal_data() {
@@ -68,13 +63,15 @@ async function sample_2_personal_data() {
         console.log(``);
     }
 
-    const storage = new CloudStorageClient(process.env.CLOUD_URL);
-    const photo_file_path = path.join(__dirname, 'content/input.png');
+    const storage = new CloudStorage(new IPFSAdapter(process.env.CLOUD_URL));
+    await storage.connect();
 
     // Save PD photo to cloud storage
     // Create full PD and sign with root hash
     // Save full PD to cloud storage
     // Save full PD record to blockchain
+    const photo_file_path = path.join(__dirname, 'content/input.png');
+
     {
         console.log(`Save PD photo to cloud storage...`);
         const photo_file_buf = fs.readFileSync(photo_file_path);
@@ -85,9 +82,16 @@ async function sample_2_personal_data() {
         console.log(``);
 
         console.log(`Create full PD and sign with root hash...`);
-        const photo_ref = makeReferencePart(photo_url, photo_type, photo_hash);
-        const full_pd_content = makeFullPersonalDataContent('James', 'Bond', 'bond@mi5.gov.uk', '+44123456789', photo_ref);
-        const { full_pd: cloud_full_pd, root_hash } = makeFullPersonalData(full_pd_content);
+        let pd1 = new PersonalData();
+        pd1.assign({
+            first_name: 'James',
+            last_name: 'Bond',
+            email: 'bond@mi5.gov.uk',
+            phone: '+44123456789',
+            photo: PersonalData.makeReference(photo_url, photo_type, photo_hash)
+        });
+        const cloud_full_pd = pd1.getAllParts();
+        const root_hash = pd1.getRootHash();
         console.log(`Full PD root hash: ${root_hash}`);
         console.log(``);
 
@@ -134,7 +138,8 @@ async function sample_2_personal_data() {
         console.log(`Load full PD from cloud storage...`);
         const cloud_full_pd = await storage.crypto_load_object(bc_full_pd.url, subject.key.toPublicKey(), subject.key);
         console.log(`Full PD from cloud storage: ${JSON.stringify(cloud_full_pd)}`);
-        const full_pd_hash = hashPersonalData(cloud_full_pd);
+        const fpd = PersonalData.fromAllParts(cloud_full_pd);
+        const full_pd_hash = fpd.getRootHash();
         console.log(`Full PD root hash: ${full_pd_hash}`);
         assert.equal(bc_full_pd.hash, full_pd_hash);
         console.log(``);
@@ -158,13 +163,18 @@ async function sample_2_personal_data() {
         assert.notEqual(bc_full_pd, null);
         const cloud_full_pd = await storage.crypto_load_object(bc_full_pd.url, subject.key.toPublicKey(), subject.key);
         assert.notEqual(cloud_full_pd, null);
-        const partial_pd = makePartialPersonalData(cloud_full_pd, [ 'name', 'email' ]);
-        console.log(`Partial PD root hash: ${bc_full_pd.hash}`);
+        const fpd = PersonalData.fromAllParts(cloud_full_pd);
+        const full_pd_hash = fpd.getRootHash();
+        const ppd = fpd.makePartial([ 'name', 'email' ]);
+        const partial_pd_hash = ppd.getRootHash();
+        console.log(`Partial PD root hash: ${partial_pd_hash}`);
+        assert.equal(partial_pd_hash, full_pd_hash);
         console.log(``);
 
         console.log(`Save partial PD to cloud storage...`);
-        const partial_pd_url = await storage.crypto_save_object(partial_pd, subject.key, operator.key.toPublicKey());
-        console.log(`Partial PD saved to cloud storage: ${JSON.stringify(partial_pd)}, url: ${partial_pd_url}`);
+        const cloud_partial_pd = ppd.getAllParts();
+        const partial_pd_url = await storage.crypto_save_object(cloud_partial_pd, subject.key, operator.key.toPublicKey());
+        console.log(`Partial PD saved to cloud storage: ${JSON.stringify(cloud_partial_pd)}, url: ${partial_pd_url}`);
         console.log(``);
 
         {
@@ -205,11 +215,14 @@ async function sample_2_personal_data() {
         console.log(`Load partial PD from cloud storage...`);
         const cloud_partial_pd = await storage.crypto_load_object(bc_partial_pd.url, subject.key.toPublicKey(), operator.key);
         console.log(`Partial PD from cloud storage: ${JSON.stringify(cloud_partial_pd)}`);
-        const partial_pd_hash = hashPersonalData(cloud_partial_pd);
+        const ppd = PersonalData.fromAllParts(cloud_partial_pd);
+        const partial_pd_hash = ppd.getRootHash();
         console.log(`Partial PD root hash: ${partial_pd_hash}`);
         assert.equal(bc_partial_pd.hash, partial_pd_hash);
         console.log(``);
     }
+
+    await storage.disconnect();
 }
 
 async function finalizer() {

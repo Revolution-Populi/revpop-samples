@@ -1,13 +1,19 @@
 version: "3"
 services:
   blockchain:
-    image: public.ecr.aws/revpop/revpop-core:latest
+    build:
+      context: ./blockchain
+      dockerfile: Dockerfile
+    image: revpop-core-samples
     expose:
     - 8090
+
+  # Cloud storage - IPFS
   cloud:
-    image: mongo:3
-    expose:
-    - 27017
+    image: ipfs/go-ipfs:latest
+    environment:
+      - IPFS_PROFILE=lowpower
+
   samples:
     build:
       context: .
