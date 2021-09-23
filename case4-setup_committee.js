@@ -20,28 +20,29 @@ require('dotenv').config();
 const { PrivateKey } = require('@revolutionpopuli/revpopjs');
 const revpop = require('./lib/revpop');
 
-async function get_witness(witness_acc_name) {
-    const witness = await revpop.db_exec('get_witness_by_account', witness_acc_name);
-    if (!witness) {
-        throw new Error(`No witness with account ${witness_acc_name} found!`);
+async function get_committee_member(committee_member_acc_name) {
+    const committee_member = revpop.db_exec('get_committee_member_by_account', committee_member_acc_name);
+    if (!committee_member) {
+        throw new Error(`No committee_member with account ${committee_member_acc_name} found!`);
     }
-    return witness;
+    return committee_member;
 }
 
-async function get_witnesses(witnesses_acc_names) {
-    const witnesses_promises = [];
-    for (const witnesses_acc_name of witnesses_acc_names) {
-        witnesses_promises.push(get_witness(witnesses_acc_name));
+async function get_committee_memberes(committee_memberes_acc_names) {
+    const committee_memberes_promises = [];
+    for (const committee_memberes_acc_name of committee_memberes_acc_names) {
+        committee_memberes_promises.push(get_committee_member(committee_memberes_acc_name));
     }
-    return await Promise.all(witnesses_promises);
+    return await Promise.all(committee_memberes_promises);
 }
 
-async function vote_for_witnesses(voter, witnesses_acc_names) {
-    const witnesses = await get_witnesses(witnesses_acc_names);
+async function vote_for_committee_memberes(voter, committee_memberes_acc_names) {
+    const committee_memberes = await get_committee_memberes(committee_memberes_acc_names);
     const new_options = JSON.parse(JSON.stringify(voter.acc.options));
-    new_options.votes = witnesses.map(witness => witness.vote_id);
+    new_options.votes = committee_memberes.map(committee_member => committee_member.vote_id);
     new_options.votes.sort();
-    new_options.num_witness = new_options.votes.length;
+    new_options.num_committee = new_options.votes.length;
+    new_options.num_witness = 0;
     await revpop.transaction(voter.key, 'account_update', {
         fee: revpop.no_fee(),
         account: voter.acc.id,
@@ -49,12 +50,12 @@ async function vote_for_witnesses(voter, witnesses_acc_names) {
     });
 }
 
-async function transfer_to_witnesses(issuer, witnesses_acc_names, amount) {
+async function transfer_to_committee_memberes(issuer, committee_memberes_acc_names, amount) {
     let transfers = [];
-    for (const witness_name of witnesses_acc_names) {
-        console.log(`Transfer ${amount} RVP to account ${witness_name}...`);
+    for (const committee_member_name of committee_memberes_acc_names) {
+        console.log(`Transfer ${amount} RVP to account ${committee_member_name}...`);
         const to = {};
-        to.acc = await revpop.db_exec('get_account_by_name', witness_name);;
+        to.acc = await revpop.db_exec('get_account_by_name', committee_member_name);;
         transfers.push(revpop.transfer(issuer, to, amount));
     };
     await Promise.all(transfers);
@@ -85,12 +86,12 @@ async function case4_setup_committee() {
         }
         console.log(``);
 
-        const witnesses_acc_names = [ 'init0', 'init1', 'init2', 'init3', 'init4', 'init5', 'init6', 'init7', 'init8', 'init9', 'init10' ];
-        const witnesses_ids = (await get_witnesses(witnesses_acc_names)).map(witness => witness.id);
+        const committee_memberes_acc_names = [ 'init0', 'init1', 'init2', 'init3', 'init4', 'init5', 'init6', 'init7', 'init8', 'init9', 'init10' ];
+        const committee_memberes_ids = (await get_committee_memberes(committee_memberes_acc_names)).map(committee_member => committee_member.id);
 
-        console.log(`Voting for witnesses ${JSON.stringify(witnesses_ids)}...`);
-        await vote_for_witnesses(voter, witnesses_acc_names);
-        await transfer_to_witnesses(voter, witnesses_acc_names, 10000 * 10**5);
+        console.log(`Voting for committee_memberes ${JSON.stringify(committee_memberes_ids)}...`);
+        await vote_for_committee_memberes(voter, committee_memberes_acc_names);
+        await transfer_to_committee_memberes(voter, committee_memberes_acc_names, 10000 * 10**5);
         console.log(`OK`);
         console.log(``);
 
