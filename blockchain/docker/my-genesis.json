@@ -267,9 +267,7 @@
         [
           35,
           {
-            "name": "blind_transfer",
-            "fee": 0,
-            "price_per_output": 0            
+            "name": "blind_transfer"
           }
         ],
         [
@@ -315,24 +313,19 @@
         [
           42,
           {
-            "name": "custom_authority_create",
-            "basic_fee": 0,
-            "price_per_byte": 0
+            "name": "custom_authority_create"
           }
         ],
         [
           43,
           {
-            "name": "custom_authority_update",
-            "basic_fee": 0,
-            "price_per_byte": 0
+            "name": "custom_authority_update"
           }
         ],
         [
           44,
           {
-            "name": "custom_authority_delete",
-            "fee": 0
+            "name": "custom_authority_delete"
           }
         ],
         [
@@ -345,8 +338,7 @@
         [
           46,
           {
-            "name": "ticket_update",
-            "fee": 0
+            "name": "ticket_update"
           }
         ],
         [
