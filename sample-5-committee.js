@@ -65,7 +65,7 @@ async function committee_member_make_proposal_update_revpop_vote_mixture(member,
     const parameters = global_properties.parameters;
     const review_period = parameters.committee_proposal_review_period;
     // 120 - 2 min for voting
-    const expiration_time = Math.ceil(Date.now() / 1000) + review_period + 20;
+    const expiration_time = Math.ceil(Date.now() / 1000) + review_period + 120;
 
     const txb = new TransactionBuilder();
     await txb.update_head_block();
@@ -143,6 +143,8 @@ async function sample_5_committee() {
 
     const gp_new = await revpop.db_exec('get_global_properties');
     console.log(`Currently revpop_vote_mixture parameter of global properties is ${gp_new.parameters.revpop_vote_mixture}`);
+
+    assert.equal(gp_new.parameters.revpop_vote_mixture, new_rp_vm);
 }
 
 if (require.main === module) {

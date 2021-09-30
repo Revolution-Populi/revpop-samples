@@ -43,10 +43,10 @@
     isomorphic-ws "^4.0.1"
     ws "^4.1.0"
 
-"@revolutionpopuli/revpopjs@0.4.9":
-  version "0.4.9"
-  resolved "https://registry.yarnpkg.com/@revolutionpopuli/revpopjs/-/revpopjs-0.4.9.tgz#67e9087850628344aee8ec5e702276d6ea7be636"
-  integrity sha512-qsRp6USbX2ijmzsWSX3Qn0I9O7JRygT9iq1TCDttxND59AskBXN6Hoi7UpfrZK0RH1crLfAWfd4FZwdWtG+MKg==
+"@revolutionpopuli/revpopjs@0.4.10":
+  version "0.4.10"
+  resolved "https://registry.yarnpkg.com/@revolutionpopuli/revpopjs/-/revpopjs-0.4.10.tgz#395cd590ee9b780c12e0021ad613a54ce6e387bd"
+  integrity sha512-tmWAa3cufndghoHfEKChPsAmFpYubd2U6PmR3OVq/QL6azfvuxJCNhOEWqG/cv6J0iC8uOMMnxA2O84+X8hKJQ==
   dependencies:
     "@revolutionpopuli/revpopjs-ws" "0.4.5"
     aws-sdk "^2.810.0"
