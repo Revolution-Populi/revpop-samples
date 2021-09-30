@@ -147,6 +147,9 @@ async function sample_5_committee() {
     assert.equal(gp_new.parameters.revpop_vote_mixture, new_rp_vm);
 }
 
+exports.sample_committee_proposal = sample_5_committee;
+exports.finalizer = bootstrap.close_network_connection;
+
 if (require.main === module) {
     const { run_func } = require('./index');
     run_func(sample_5_committee, bootstrap.close_network_connection);

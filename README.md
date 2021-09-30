@@ -121,6 +121,15 @@ sample_4_votes         OK
     - Read and check vote counters of content
     - Share voting information with another account (friend)
     - Read votes of another account (friend)
+- sample-5-committee.js
+    - Claim balance for account nathan
+    - Voting for committee members
+    - Update committee members balances to let them pay fee for operations
+    - Create committee proposal for changing global parameter revpop_vote_mixture
+    - Vote for proposal on behalf of all committee members
+    - Wait for proposal expiration time
+    - Wait for maintenance time
+    - Check if global parameter revpop_vote_mixture changed
 
 # Personal data formats
 
