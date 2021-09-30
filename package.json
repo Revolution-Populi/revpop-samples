@@ -20,7 +20,7 @@
   ],
   "license": "GPL-3.0",
   "dependencies": {
-    "@revolutionpopuli/revpopjs": "0.4.7",
+    "@revolutionpopuli/revpopjs": "0.4.10",
     "browserify-aes": "^1.2.0",
     "bytebuffer": "^5.0.1",
     "colors": "^1.4.0",
