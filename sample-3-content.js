@@ -20,20 +20,48 @@ require('dotenv').config();
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const { CloudStorage, GoogleDriveAdapter, IPFSAdapter, PrivateKey } = require('@revolutionpopuli/revpopjs');
+const { CloudStorage, GoogleDriveAdapter, IPFSAdapter, S3Adapter, PrivateKey } = require('@revolutionpopuli/revpopjs');
 const { make_content_key, decrypt_object, decrypt_content } = require('./lib/crypto');
 const revpop = require('./lib/revpop');
-const google_drive = require('./google-drive-adapter-helper.js');
+const google_drive_helper = require('./google-drive-adapter-helper.js');
 const bootstrap = require('./case0-bootstrap.js');
 const axios = require('axios');
 
 async function sample_3_content_ipfs() {
-    return sample_3_content(new IPFSAdapter(process.env.CLOUD_URL));
+    console.log(`Start IPFS test...`);
+    await sample_3_content(new IPFSAdapter(process.env.CLOUD_URL));
+    console.log(`IPFS test finished.`);
 }
 
 async function sample_3_content_google_drive() {
-    const oAuth2Client = await google_drive.getGoogleoAuth2Client();
-    return sample_3_content(new GoogleDriveAdapter({ auth: oAuth2Client, folder: "revpop" }));
+    console.log(`Start Google Drive test...`);
+    const oAuth2Client = await google_drive_helper.getGoogleoAuth2Client();
+    if (oAuth2Client === null)
+        return;
+        
+    await sample_3_content(new GoogleDriveAdapter({ auth: oAuth2Client, folder: "revpop" }));
+    console.log(`Google Drive test finished.`);
+}
+
+async function sample_3_content_s3() {
+    console.log(`Start S3 test...`);
+    // Load client secrets from a local file.
+    // file should have AWS IAM creds with AmazonS3FullAccess.
+    // See s3_auth.json.example
+    const S3_CONFIG = require(process.env.S3_AUTH_FILE);
+    const opts = {
+        region: S3_CONFIG.region,
+        accessKeyId: S3_CONFIG.accessKeyId,
+        secretAccessKey: S3_CONFIG.secretAccessKey,
+        params: {Bucket: S3_CONFIG.Bucket}
+    };
+    if (opts.accessKeyId.includes("AIM_KEY_WITH_AmazonS3FullAccess")) {
+        console.error('Please fill in s3_auth.json with real accessKeyId, secretAccessKey and Bucket');
+        return;
+    }
+
+    await sample_3_content(new S3Adapter(opts));
+    console.log(`S3 test finished.`);
 }
 
 async function sample_3_content(adapter) {
@@ -206,6 +234,7 @@ async function sample_3_content(adapter) {
 
     // Delete content from cloud storage...
     {
+        console.log(`Deleting encrypted content from cloud storage...`);
         const res = await storage.del(content_id);
         assert.equal(res, true);
         console.log(`Content deleted from cloud storage`);
@@ -224,8 +253,13 @@ exports.sample_content_permission = sample_3_content_ipfs;
 exports.sample_3_content_google_drive = sample_3_content_google_drive;
 exports.finalizer = finalizer;
 
-if (require.main === module) {
+async function sample_3_all_adapters() {
     const { run_func } = require('./index');
-    run_func(sample_3_content_ipfs, finalizer);
-    run_func(sample_3_content_google_drive, finalizer);
+    await run_func(sample_3_content_ipfs, finalizer);
+    await run_func(sample_3_content_google_drive, finalizer);
+    await run_func(sample_3_content_s3, finalizer);    
+}
+
+if (require.main === module) {
+    sample_3_all_adapters();
 }

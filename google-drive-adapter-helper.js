@@ -30,7 +30,13 @@ const url = require('url');
 const destroyer = require('server-destroy');
 
 // Download your OAuth2 configuration from the Google
-const keys = require('./oauth2.keys.json');
+// To work with Google Drive one should obtain credentials for web applications
+// Download and store them to file, pointed in the env variable GOOGLE_OAUTH2_KEYS
+// See google_oauth2_keys.json
+// Start from here:
+// https://developers.google.com/identity/protocols/oauth2
+
+const keys = require(process.env.GOOGLE_OAUTH2_KEYS);
 
 /**
  * Create a new OAuth2Client, and go through the OAuth2 content
@@ -118,6 +124,10 @@ async function authWithStoredToken() {
 
 
 async function getGoogleoAuth2Client() {
+    if (keys.web.client_id.includes("000000000000-here-should-be-real-client-id")) {
+        console.error('Please fill in google_oauth2_keys.json with real client_id, project_id and client_secret');
+        return null;
+    }
     // TODO: Add saving token and read stored token before obtaining new one
     // authWithStoredToken();
     const oAuth2Client = await getAuthenticatedClient();

@@ -20,11 +20,50 @@ require('dotenv').config();
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const { CloudStorage, IPFSAdapter, PersonalData, PrivateKey } = require('@revolutionpopuli/revpopjs');
+const { CloudStorage, GoogleDriveAdapter, IPFSAdapter, S3Adapter, PersonalData, PrivateKey } = require('@revolutionpopuli/revpopjs');
 const { computeBufSha256 } = require('./lib/signature');
 const revpop = require('./lib/revpop');
+const google_drive_helper = require('./google-drive-adapter-helper.js');
+const bootstrap = require('./case0-bootstrap.js');
 
-async function sample_2_personal_data() {
+async function sample_2_personal_data_ipfs() {
+    console.log(`Start IPFS test...`);
+    await sample_2_personal_data(new IPFSAdapter(process.env.CLOUD_URL));
+    console.log(`IPFS test finished.`);
+}
+
+async function sample_2_personal_data_google_drive() {
+    console.log(`Start Google Drive test...`);
+    const oAuth2Client = await google_drive_helper.getGoogleoAuth2Client();
+    if (oAuth2Client === null)
+        return;
+
+    await sample_2_personal_data(new GoogleDriveAdapter({ auth: oAuth2Client, folder: "revpop" }));
+    console.log(`Google Drive test finished.`);
+}
+
+async function sample_2_personal_data_s3() {
+    console.log(`Start S3 test...`);
+    // Load client secrets from a local file.
+    // file should have AWS IAM creds with AmazonS3FullAccess.
+    // See s3_auth.json.example
+    const S3_CONFIG = require(process.env.S3_AUTH_FILE);
+    const opts = {
+        region: S3_CONFIG.region,
+        accessKeyId: S3_CONFIG.accessKeyId,
+        secretAccessKey: S3_CONFIG.secretAccessKey,
+        params: {Bucket: S3_CONFIG.Bucket}
+    };
+    if (opts.accessKeyId.includes("AIM_KEY_WITH_AmazonS3FullAccess")) {
+        console.error('Please fill in s3_auth.json with real accessKeyId, secretAccessKey and Bucket');
+        return;
+    }
+
+    await sample_2_personal_data(new S3Adapter(opts));
+    console.log(`S3 test finished.`);
+}
+
+async function sample_2_personal_data(adapter) {
     /*************************************************************************
      * Scenario:
      * Save personal data photo to the cloud storage
@@ -41,11 +80,14 @@ async function sample_2_personal_data() {
      *************************************************************************/
 
     // Connect to blockchain
-    const connect_string = process.env.BLOCKCHAIN_URL;
-    console.log(`Connecting to ${connect_string}...`);
-    const network = await revpop.connect(connect_string);
-    console.log(`Connected to network ${network.network_name}`);
-    console.log(``);
+    // const connect_string = process.env.BLOCKCHAIN_URL;
+    // console.log(`Connecting to ${connect_string}...`);
+    // const network = await revpop.connect(connect_string);
+    // console.log(`Connected to network ${network.network_name}`);
+    // console.log(``);
+
+    await bootstrap.connect_to_network();
+    await bootstrap.prepare_registrar_and_committee();
 
     // Initialize accounts
     const accounts = [
@@ -63,7 +105,7 @@ async function sample_2_personal_data() {
         console.log(``);
     }
 
-    const storage = new CloudStorage(new IPFSAdapter(process.env.CLOUD_URL));
+    const storage = new CloudStorage(adapter);
     await storage.connect();
 
     // Save PD photo to cloud storage
@@ -75,9 +117,12 @@ async function sample_2_personal_data() {
     {
         console.log(`Save PD photo to cloud storage...`);
         const photo_file_buf = fs.readFileSync(photo_file_path);
-        const photo_url = await storage.crypto_save_buffer(photo_file_buf, subject.key, subject.key.toPublicKey());
+        const save_buffer_result = await storage.crypto_save_buffer(photo_file_buf, subject.key, subject.key.toPublicKey());
+        assert.notEqual(save_buffer_result, '');
+        const photo_url = save_buffer_result.url;
         const photo_type = 'image/png';
         const photo_hash = computeBufSha256(photo_file_buf);
+        const photo_storage_data = save_buffer_result.storage_data;
         console.log(`PD photo saved to cloud storage, hash: ${photo_hash}, url: ${photo_url}`);
         console.log(``);
 
@@ -88,7 +133,7 @@ async function sample_2_personal_data() {
             last_name: 'Bond',
             email: 'bond@mi5.gov.uk',
             phone: '+44123456789',
-            photo: PersonalData.makeReference(photo_url, photo_type, photo_hash)
+            photo: PersonalData.makeReference(photo_url, photo_type, photo_hash, photo_storage_data)
         });
         const cloud_full_pd = pd1.getAllParts();
         const root_hash = pd1.getRootHash();
@@ -96,7 +141,9 @@ async function sample_2_personal_data() {
         console.log(``);
 
         console.log(`Save full PD to cloud storage...`);
-        const full_pd_url = await storage.crypto_save_object(cloud_full_pd, subject.key, subject.key.toPublicKey());
+        const save_object_result = await storage.crypto_save_object(cloud_full_pd, subject.key, subject.key.toPublicKey());
+        assert.notEqual(save_object_result, '');
+        const full_pd_url = save_object_result.url;
         console.log(`Full PD saved to cloud storage: ${JSON.stringify(cloud_full_pd)}, url: ${full_pd_url}`);
         console.log(``);
 
@@ -122,6 +169,7 @@ async function sample_2_personal_data() {
             operator_account: subject.acc.id,
             url: full_pd_url,
             hash: root_hash,
+            storage_data: save_object_result.storage_data
         });
         console.log(`Full PD record ${full_pd_create_res} created in blockchain`);
         console.log(``);
@@ -135,8 +183,10 @@ async function sample_2_personal_data() {
         console.log(`Full PD from blockchain: ${JSON.stringify(bc_full_pd)}`);
         console.log(``);
 
+        const full_pd_sd = JSON.parse(bc_full_pd.storage_data);
+        const full_pd_cid = full_pd_sd[2];
         console.log(`Load full PD from cloud storage...`);
-        const cloud_full_pd = await storage.crypto_load_object(bc_full_pd.url, subject.key.toPublicKey(), subject.key);
+        const cloud_full_pd = await storage.crypto_load_object(full_pd_cid, subject.key.toPublicKey(), subject.key);
         console.log(`Full PD from cloud storage: ${JSON.stringify(cloud_full_pd)}`);
         const fpd = PersonalData.fromAllParts(cloud_full_pd);
         const full_pd_hash = fpd.getRootHash();
@@ -146,9 +196,11 @@ async function sample_2_personal_data() {
 
         if (cloud_full_pd.content.photo) {
             console.log(`Load PD photo from cloud storage...`);
-            const photo_buf = await storage.crypto_load_buffer(cloud_full_pd.content.photo.url, subject.key.toPublicKey(), subject.key);
+            const photo_storage_data = JSON.parse(cloud_full_pd.content.photo.storage_data);
+            const photo_content_id = photo_storage_data[2];
+            const photo_buf = await storage.crypto_load_buffer(photo_content_id, subject.key.toPublicKey(), subject.key);
             const photo_hash = computeBufSha256(photo_buf);
-            console.log(`PD photo hash: ${photo_hash}, url: ${cloud_full_pd.content.photo.url}`);
+            console.log(`PD photo hash: ${photo_hash}, url: ${cloud_full_pd.content.photo.url}, cid: ${photo_content_id}`);
             assert.equal(cloud_full_pd.content.photo.hash, photo_hash);
         }
         console.log(``);
@@ -161,7 +213,9 @@ async function sample_2_personal_data() {
         console.log(`Create partial PD and sign with root hash...`);
         const bc_full_pd = await revpop.db_exec('get_last_personal_data', subject.acc.id, subject.acc.id);
         assert.notEqual(bc_full_pd, null);
-        const cloud_full_pd = await storage.crypto_load_object(bc_full_pd.url, subject.key.toPublicKey(), subject.key);
+        const full_pd_sd = JSON.parse(bc_full_pd.storage_data);
+        const full_pd_cid = full_pd_sd[2];        
+        const cloud_full_pd = await storage.crypto_load_object(full_pd_cid, subject.key.toPublicKey(), subject.key);
         assert.notEqual(cloud_full_pd, null);
         const fpd = PersonalData.fromAllParts(cloud_full_pd);
         const full_pd_hash = fpd.getRootHash();
@@ -173,8 +227,8 @@ async function sample_2_personal_data() {
 
         console.log(`Save partial PD to cloud storage...`);
         const cloud_partial_pd = ppd.getAllParts();
-        const partial_pd_url = await storage.crypto_save_object(cloud_partial_pd, subject.key, operator.key.toPublicKey());
-        console.log(`Partial PD saved to cloud storage: ${JSON.stringify(cloud_partial_pd)}, url: ${partial_pd_url}`);
+        const partial_pd = await storage.crypto_save_object(cloud_partial_pd, subject.key, operator.key.toPublicKey());
+        console.log(`Partial PD saved to cloud storage: ${JSON.stringify(cloud_partial_pd)}, url: ${partial_pd.url}`);
         console.log(``);
 
         {
@@ -197,8 +251,9 @@ async function sample_2_personal_data() {
             fee: revpop.no_fee(),
             subject_account: subject.acc.id,
             operator_account: operator.acc.id,
-            url: partial_pd_url,
+            url: partial_pd.url,
             hash: bc_full_pd.hash,
+            storage_data: partial_pd.storage_data,
         });
         console.log(`Partial PD record ${partial_pd_create_res} created in blockchain`);
         console.log(``);
@@ -213,7 +268,9 @@ async function sample_2_personal_data() {
         console.log(``);
 
         console.log(`Load partial PD from cloud storage...`);
-        const cloud_partial_pd = await storage.crypto_load_object(bc_partial_pd.url, subject.key.toPublicKey(), operator.key);
+        const partial_pd_sd = JSON.parse(bc_partial_pd.storage_data);
+        const partial_pd_cid = partial_pd_sd[2];   
+        const cloud_partial_pd = await storage.crypto_load_object(partial_pd_cid, subject.key.toPublicKey(), operator.key);
         console.log(`Partial PD from cloud storage: ${JSON.stringify(cloud_partial_pd)}`);
         const ppd = PersonalData.fromAllParts(cloud_partial_pd);
         const partial_pd_hash = ppd.getRootHash();
@@ -233,7 +290,14 @@ async function finalizer() {
 exports.sample_personal_data = sample_2_personal_data;
 exports.finalizer = finalizer;
 
-if (require.main === module) {
+
+async function sample_2_all_adapters() {
     const { run_func } = require('./index');
-    run_func(sample_2_personal_data, finalizer);
+    await run_func(sample_2_personal_data_ipfs, finalizer);
+    await run_func(sample_2_personal_data_google_drive, finalizer);
+    await run_func(sample_2_personal_data_s3, finalizer);    
+}
+
+if (require.main === module) {
+    sample_2_all_adapters();
 }
