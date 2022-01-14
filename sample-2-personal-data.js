@@ -148,10 +148,10 @@ async function sample_2_personal_data(adapter) {
         console.log(``);
 
         {
-            const old_bc_pd = await revpop.db_exec('get_last_personal_data', subject.acc.id, subject.acc.id);
+            const old_bc_pd = await revpop.db_exec('get_last_personal_data_v2', subject.acc.id, subject.acc.id);
             if (old_bc_pd != null) {
                 console.log(`Remove old full PD record from blockchain, subject ${subject.name}, operator ${subject.name}...`);
-                const old_pd_remove_res = await revpop.transaction(subject.key, 'personal_data_remove', {
+                const old_pd_remove_res = await revpop.transaction(subject.key, 'personal_data_v2_remove', {
                     fee: revpop.no_fee(),
                     subject_account: subject.acc.id,
                     operator_account: subject.acc.id,
@@ -163,7 +163,7 @@ async function sample_2_personal_data(adapter) {
         }
 
         console.log(`Save full PD record to blockchain, subject ${subject.name}, operator ${subject.name}...`);
-        const full_pd_create_res = await revpop.transaction(subject.key, "personal_data_create", {
+        const full_pd_create_res = await revpop.transaction(subject.key, "personal_data_v2_create", {
             fee: revpop.no_fee(),
             subject_account: subject.acc.id,
             operator_account: subject.acc.id,
@@ -179,7 +179,7 @@ async function sample_2_personal_data(adapter) {
     // Verify full PD with root hash
     {
         console.log(`Load full PD from blockchain, subject ${subject.name}, operator ${subject.name}...`);
-        const bc_full_pd = await revpop.db_exec("get_last_personal_data", subject.acc.id, subject.acc.id);
+        const bc_full_pd = await revpop.db_exec("get_last_personal_data_v2", subject.acc.id, subject.acc.id);
         console.log(`Full PD from blockchain: ${JSON.stringify(bc_full_pd)}`);
         console.log(``);
 
@@ -211,7 +211,7 @@ async function sample_2_personal_data(adapter) {
     // Save partial PD record to blockchain
     {
         console.log(`Create partial PD and sign with root hash...`);
-        const bc_full_pd = await revpop.db_exec('get_last_personal_data', subject.acc.id, subject.acc.id);
+        const bc_full_pd = await revpop.db_exec('get_last_personal_data_v2', subject.acc.id, subject.acc.id);
         assert.notEqual(bc_full_pd, null);
         const full_pd_sd = JSON.parse(bc_full_pd.storage_data);
         const full_pd_cid = full_pd_sd[2];        
@@ -232,10 +232,10 @@ async function sample_2_personal_data(adapter) {
         console.log(``);
 
         {
-            const old_bc_pd = await revpop.db_exec('get_last_personal_data', subject.acc.id, operator.acc.id);
+            const old_bc_pd = await revpop.db_exec('get_last_personal_data_v2', subject.acc.id, operator.acc.id);
             if (old_bc_pd != null) {
                 console.log(`Remove old partial PD record from blockchain, subject ${subject.name}, operator ${operator.name}...`);
-                const old_pd_remove_res = await revpop.transaction(subject.key, 'personal_data_remove', {
+                const old_pd_remove_res = await revpop.transaction(subject.key, 'personal_data_v2_remove', {
                     fee: revpop.no_fee(),
                     subject_account: subject.acc.id,
                     operator_account: operator.acc.id,
@@ -247,7 +247,7 @@ async function sample_2_personal_data(adapter) {
         }
 
         console.log(`Save partial PD record to blockchain, subject ${subject.name}, operator ${operator.name}...`);
-        const partial_pd_create_res = await revpop.transaction(subject.key, "personal_data_create", {
+        const partial_pd_create_res = await revpop.transaction(subject.key, "personal_data_v2_create", {
             fee: revpop.no_fee(),
             subject_account: subject.acc.id,
             operator_account: operator.acc.id,
@@ -263,7 +263,7 @@ async function sample_2_personal_data(adapter) {
     // Verify partial PD with root hash
     {
         console.log(`Load partial PD from blockchain, subject ${subject.name}, operator ${operator.name}...`);
-        const bc_partial_pd = await revpop.db_exec("get_last_personal_data", subject.acc.id, operator.acc.id);
+        const bc_partial_pd = await revpop.db_exec("get_last_personal_data_v2", subject.acc.id, operator.acc.id);
         console.log(`Partial PD from blockchain: ${JSON.stringify(bc_partial_pd)}`);
         console.log(``);
 
