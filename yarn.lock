@@ -30,6 +30,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@googleapis/drive@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@googleapis/drive/-/drive-2.1.0.tgz#2c62ce6184784f433725810edc5dc1798f9da4a3"
+  integrity sha512-k+4URSgxStPUW01XyzYOf6pNfPC9sT/GN0RbsI3DwaR05bGimkXYDdMe8ATcrfFbr/rs6D1eGuN8uxfn1MiVZA==
+  dependencies:
+    googleapis-common "^5.0.1"
+
 "@multiformats/base-x@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@multiformats/base-x/-/base-x-4.0.1.tgz#95ff0fa58711789d53aefb2590a8b7a4e715d121"
@@ -43,11 +50,12 @@
     isomorphic-ws "^4.0.1"
     ws "^4.1.0"
 
-"@revolutionpopuli/revpopjs@0.4.10":
-  version "0.4.10"
-  resolved "https://registry.yarnpkg.com/@revolutionpopuli/revpopjs/-/revpopjs-0.4.10.tgz#395cd590ee9b780c12e0021ad613a54ce6e387bd"
-  integrity sha512-tmWAa3cufndghoHfEKChPsAmFpYubd2U6PmR3OVq/QL6azfvuxJCNhOEWqG/cv6J0iC8uOMMnxA2O84+X8hKJQ==
+"@revolutionpopuli/revpopjs@0.4.11":
+  version "0.4.11"
+  resolved "https://registry.yarnpkg.com/@revolutionpopuli/revpopjs/-/revpopjs-0.4.11.tgz#24cbf8f0d8192bee45acb7bcafe2ff6ce9965383"
+  integrity sha512-3PnQIxwFp+BKAng9+gJlwCdDmsobzU6XdMvL3BbjGQL6IVqfjAndryN4mtT8gbr1v1kcHzNmSkb/G1+JE1dgkg==
   dependencies:
+    "@googleapis/drive" "^2.1.0"
     "@revolutionpopuli/revpopjs-ws" "0.4.5"
     aws-sdk "^2.810.0"
     bigi "1.4.2"
@@ -59,6 +67,7 @@
     deep-equal "1.0.1"
     ecurve "1.0.6"
     event-emitter "0.3.5"
+    http2 "^3.3.7"
     immutable "3.8.2"
     ipfs-http-client "^48.2.2"
     safe-buffer "^5.2.1"
@@ -1050,7 +1059,7 @@ google-p12-pem@^3.0.3:
   dependencies:
     node-forge "^0.10.0"
 
-googleapis-common@^5.0.2:
+googleapis-common@^5.0.1, googleapis-common@^5.0.2:
   version "5.0.5"
   resolved "https://registry.yarnpkg.com/googleapis-common/-/googleapis-common-5.0.5.tgz#4c7160be1ed7e4cc8cdbcdb6eac8a4b3a61dd782"
   integrity sha512-o2dgoW4x4fLIAN+IVAOccz3mEH8Lj1LP9c9BSSvkNJEn+U7UZh0WSr4fdH08x5VH7+sstIpd1lOYFZD0g7j4pw==
@@ -1131,6 +1140,11 @@ hmac-drbg@^1.0.1:
     hash.js "^1.0.3"
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
+
+http2@^3.3.7:
+  version "3.3.7"
+  resolved "https://registry.yarnpkg.com/http2/-/http2-3.3.7.tgz#78396eb1e0bcd1db1f4b138d997c682e23414fbc"
+  integrity sha512-puSi8M8WNlFJm9Pk4c/Mbz9Gwparuj3gO9/RRO5zv6piQ0FY+9Qywp0PdWshYgsMJSalixFY7eC6oPu0zRxLAQ==
 
 https-proxy-agent@^5.0.0:
   version "5.0.0"

@@ -1,6 +1,6 @@
 /**
  * The Revolution Populi Project
- * Copyright (C) 2020 Revolution Populi Limited
+ * Copyright (C) 2022 Revolution Populi Limited
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,16 +135,15 @@ async function sample_2_personal_data(adapter) {
             phone: '+44123456789',
             photo: PersonalData.makeReference(photo_url, photo_type, photo_hash, photo_storage_data)
         });
-        const cloud_full_pd = pd1.getAllParts();
         const root_hash = pd1.getRootHash();
         console.log(`Full PD root hash: ${root_hash}`);
         console.log(``);
 
         console.log(`Save full PD to cloud storage...`);
-        const save_object_result = await storage.crypto_save_object(cloud_full_pd, subject.key, subject.key.toPublicKey());
+        const save_object_result = await storage.crypto_save_buffer(pd1.toBuffer(), subject.key, subject.key.toPublicKey());
         assert.notEqual(save_object_result, '');
         const full_pd_url = save_object_result.url;
-        console.log(`Full PD saved to cloud storage: ${JSON.stringify(cloud_full_pd)}, url: ${full_pd_url}`);
+        console.log(`Full PD saved to cloud storage: ${pd1.stringify()}, url: ${full_pd_url}`);
         console.log(``);
 
         {
@@ -186,22 +185,23 @@ async function sample_2_personal_data(adapter) {
         const full_pd_sd = JSON.parse(bc_full_pd.storage_data);
         const full_pd_cid = full_pd_sd[2];
         console.log(`Load full PD from cloud storage...`);
-        const cloud_full_pd = await storage.crypto_load_object(full_pd_cid, subject.key.toPublicKey(), subject.key);
-        console.log(`Full PD from cloud storage: ${JSON.stringify(cloud_full_pd)}`);
-        const fpd = PersonalData.fromAllParts(cloud_full_pd);
+        const fpd_buf = await storage.crypto_load_buffer(full_pd_cid, subject.key.toPublicKey(), subject.key);
+        const fpd = PersonalData.fromBuffer(fpd_buf);
+        console.log(`Full PD from cloud storage: ${fpd.stringify()}`);
         const full_pd_hash = fpd.getRootHash();
         console.log(`Full PD root hash: ${full_pd_hash}`);
         assert.equal(bc_full_pd.hash, full_pd_hash);
         console.log(``);
 
-        if (cloud_full_pd.content.photo) {
+        const fpd_photo = fpd.getPhoto();
+        if (fpd_photo !== undefined) {
             console.log(`Load PD photo from cloud storage...`);
-            const photo_storage_data = JSON.parse(cloud_full_pd.content.photo.storage_data);
+            const photo_storage_data = JSON.parse(fpd_photo.storage_data);
             const photo_content_id = photo_storage_data[2];
             const photo_buf = await storage.crypto_load_buffer(photo_content_id, subject.key.toPublicKey(), subject.key);
             const photo_hash = computeBufSha256(photo_buf);
-            console.log(`PD photo hash: ${photo_hash}, url: ${cloud_full_pd.content.photo.url}, cid: ${photo_content_id}`);
-            assert.equal(cloud_full_pd.content.photo.hash, photo_hash);
+            console.log(`PD photo hash: ${photo_hash}, url: ${fpd_photo.url}, cid: ${photo_content_id}`);
+            assert.equal(fpd_photo.hash, photo_hash);
         }
         console.log(``);
     }
@@ -214,10 +214,10 @@ async function sample_2_personal_data(adapter) {
         const bc_full_pd = await revpop.db_exec('get_last_personal_data_v2', subject.acc.id, subject.acc.id);
         assert.notEqual(bc_full_pd, null);
         const full_pd_sd = JSON.parse(bc_full_pd.storage_data);
-        const full_pd_cid = full_pd_sd[2];        
-        const cloud_full_pd = await storage.crypto_load_object(full_pd_cid, subject.key.toPublicKey(), subject.key);
-        assert.notEqual(cloud_full_pd, null);
-        const fpd = PersonalData.fromAllParts(cloud_full_pd);
+        const full_pd_cid = full_pd_sd[2];     
+        const fpd_buf = await storage.crypto_load_buffer(full_pd_cid, subject.key.toPublicKey(), subject.key);
+        assert.notEqual(fpd_buf, null);
+        const fpd = PersonalData.fromBuffer(fpd_buf);
         const full_pd_hash = fpd.getRootHash();
         const ppd = fpd.makePartial([ 'name', 'email' ]);
         const partial_pd_hash = ppd.getRootHash();
@@ -226,9 +226,8 @@ async function sample_2_personal_data(adapter) {
         console.log(``);
 
         console.log(`Save partial PD to cloud storage...`);
-        const cloud_partial_pd = ppd.getAllParts();
-        const partial_pd = await storage.crypto_save_object(cloud_partial_pd, subject.key, operator.key.toPublicKey());
-        console.log(`Partial PD saved to cloud storage: ${JSON.stringify(cloud_partial_pd)}, url: ${partial_pd.url}`);
+        const partial_pd = await storage.crypto_save_buffer(ppd.toBuffer(), subject.key, operator.key.toPublicKey());
+        console.log(`Partial PD saved to cloud storage: ${ppd.stringify()}, url: ${partial_pd.url}`);
         console.log(``);
 
         {
@@ -270,9 +269,9 @@ async function sample_2_personal_data(adapter) {
         console.log(`Load partial PD from cloud storage...`);
         const partial_pd_sd = JSON.parse(bc_partial_pd.storage_data);
         const partial_pd_cid = partial_pd_sd[2];   
-        const cloud_partial_pd = await storage.crypto_load_object(partial_pd_cid, subject.key.toPublicKey(), operator.key);
-        console.log(`Partial PD from cloud storage: ${JSON.stringify(cloud_partial_pd)}`);
-        const ppd = PersonalData.fromAllParts(cloud_partial_pd);
+        const ppd_buf = await storage.crypto_load_buffer(partial_pd_cid, subject.key.toPublicKey(), operator.key);
+        const ppd = PersonalData.fromBuffer(ppd_buf);
+        console.log(`Partial PD from cloud storage: ${ppd.stringify()}`);
         const partial_pd_hash = ppd.getRootHash();
         console.log(`Partial PD root hash: ${partial_pd_hash}`);
         assert.equal(bc_partial_pd.hash, partial_pd_hash);
