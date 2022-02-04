@@ -57,6 +57,12 @@ Follow the steps in order to run samples on your machine.
     2. CLOUD_URL is a connection string for the MongoDB driver
 3. `npm install` or `yarn`
 4. [Use this genesis file to start blockchain](blockchain).
+5. For sample_2_personal_data and sample_3_content, that working with cloud storage adapters next prerequisits required:
+   * For IPFS adapter .env file should define CLOUD_URL that points out to the working IPFS node with open access.
+     It can be started locally in docker see "Docker-compose configuration"
+   * For Google Drive one should obtain credentials for web applications, download and store them to google_oauth2_keys.json
+     How to obtain credentials: https://developers.google.com/identity/protocols/oauth2 
+   * For S3 file s3_auth.json should contain region, Bucket name and AWS IAM creds with AmazonS3FullAccess.
 
 This repository was tested in the following environment:
 * Ubuntu 18.04 Linux

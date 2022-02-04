@@ -20,11 +20,51 @@ require('dotenv').config();
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const { CloudStorage, IPFSAdapter, PrivateKey } = require('@revolutionpopuli/revpopjs');
-const { make_content_key, decrypt_object } = require('./lib/crypto');
+const { CloudStorage, GoogleDriveAdapter, IPFSAdapter, S3Adapter, PrivateKey } = require('@revolutionpopuli/revpopjs');
+const { make_content_key, decrypt_object, decrypt_content } = require('./lib/crypto');
 const revpop = require('./lib/revpop');
+const google_drive_helper = require('./google-drive-adapter-helper.js');
+const bootstrap = require('./case0-bootstrap.js');
+const axios = require('axios');
 
-async function sample_3_content() {
+async function sample_3_content_ipfs() {
+    console.log(`Start IPFS test...`);
+    await sample_3_content(new IPFSAdapter(process.env.CLOUD_URL));
+    console.log(`IPFS test finished.`);
+}
+
+async function sample_3_content_google_drive() {
+    console.log(`Start Google Drive test...`);
+    const oAuth2Client = await google_drive_helper.getGoogleoAuth2Client();
+    if (oAuth2Client === null)
+        return;
+        
+    await sample_3_content(new GoogleDriveAdapter({ auth: oAuth2Client, folder: "revpop" }));
+    console.log(`Google Drive test finished.`);
+}
+
+async function sample_3_content_s3() {
+    console.log(`Start S3 test...`);
+    // Load client secrets from a local file.
+    // file should have AWS IAM creds with AmazonS3FullAccess.
+    // See s3_auth.json.example
+    const S3_CONFIG = require(process.env.S3_AUTH_FILE);
+    const opts = {
+        region: S3_CONFIG.region,
+        accessKeyId: S3_CONFIG.accessKeyId,
+        secretAccessKey: S3_CONFIG.secretAccessKey,
+        params: {Bucket: S3_CONFIG.Bucket}
+    };
+    if (opts.accessKeyId.includes("AIM_KEY_WITH_AmazonS3FullAccess")) {
+        console.error('Please fill in s3_auth.json with real accessKeyId, secretAccessKey and Bucket');
+        return;
+    }
+
+    await sample_3_content(new S3Adapter(opts));
+    console.log(`S3 test finished.`);
+}
+
+async function sample_3_content(adapter) {
     /*************************************************************************
      * Scenario:
      * Save the encrypted content to the cloud storage
@@ -38,14 +78,11 @@ async function sample_3_content() {
      * Update+read the content card
      *************************************************************************/
 
-    // Connect to blockchain
-    const connect_string = process.env.BLOCKCHAIN_URL;
-    console.log(`Connecting to ${connect_string}...`);
-    const network = await revpop.connect(connect_string);
-    console.log(`Connected to network ${network.network_name}`);
-    console.log(``);
+    await bootstrap.connect_to_network();
+    await bootstrap.prepare_registrar_and_committee();
 
-    const plaintext_input_file = path.join(__dirname, 'content/input.png');
+    const original_input_file = path.join(__dirname, 'content/input.png');
+    const original_content_buf = fs.readFileSync(original_input_file);
 
     // Initialize accounts
     const accounts = [
@@ -64,19 +101,35 @@ async function sample_3_content() {
         console.log(``);
     }
 
-    const storage = new CloudStorage(new IPFSAdapter(process.env.CLOUD_URL));
+    const storage = new CloudStorage(adapter);
     await storage.connect();
 
     // Save encrypted content to cloud storage
     const save_content_key = make_content_key();
-    let save_content_url = null;
+    let save_content_result = null;
     {
         console.log(`Save encrypted content to cloud storage...`);
-        const content_buf = fs.readFileSync(plaintext_input_file);
-        save_content_url = await storage.crypto_save_content(content_buf, save_content_key);
-        console.log(`Encrypted content saved, url ${save_content_url}`);
+        save_content_result = await storage.crypto_save_content(original_content_buf, save_content_key);
+        assert.notEqual(save_content_result, '');
+        console.log(`Encrypted content saved, url ${save_content_result.url}`);
         console.log(``);
     }
+
+    // Download saved content by link
+    {
+        console.log(`Download encrypted content from cloud storage by url: ${save_content_result.url}`);
+
+        try {
+            const response = await axios.get(save_content_result.url, { responseType:  'arraybuffer' });
+            // console.log(`Content loaded, length ${response.data.length}`);
+            const load_content_buf = decrypt_content(response.data, save_content_key)
+            assert.equal(Buffer.compare(load_content_buf, original_content_buf), 0);
+        } catch (error) {
+            assert.fail(`Failed to download content file: ` + error.message);
+        }
+        console.log(`Content downloaded, successfully.`);
+        console.log(``);
+     }
 
     // Remove existing content cards
     {
@@ -96,10 +149,11 @@ async function sample_3_content() {
         content.path = path.join(__dirname, content.path);
         content.buffer = null; // create_content_card will load buffer from path
         content.hash = null; // create_content_card will compute hash from content buffer
-        content.url = save_content_url;
+        content.url = save_content_result.url;
         content.type = 'image/png';
         content.description = 'Some image';
         content.key = save_content_key;
+        content.storage_data = save_content_result.storage_data;
         content.id = await revpop.create_content_card(subject, content);
         console.log(`Content card ${content.id} created`);
         console.log(``);
@@ -137,20 +191,21 @@ async function sample_3_content() {
     // Read content card
     let load_content_card = null;
     {
-        const content_id = load_permission.object_id;
-        console.log(`Read content card by id ${content_id}...`);
-        load_content_card = await revpop.get_content_card(content_id);
+        const content_card_id = load_permission.object_id;
+        console.log(`Read content card by id ${content_card_id}...`);
+        load_content_card = await revpop.get_content_card(content_card_id);
         console.log(`Content card:`, load_content_card);
         console.log(``);
     }
 
     // Load encrypted content from cloud storage
+    const storage_data = JSON.parse(load_content_card.storage_data);
+    const content_id = storage_data[2];
     {
         console.log(`Load encrypted content from cloud storage...`);
         const load_content_key = decrypt_object(load_permission.content_key, subject.key.toPublicKey(), operator.key);
-        const load_content_buf = await storage.crypto_load_content(load_content_card.url, load_content_key);
-        const content_buf = fs.readFileSync(plaintext_input_file);
-        assert.equal(Buffer.compare(load_content_buf, content_buf), 0);
+        const load_content_buf = await storage.crypto_load_content(content_id, load_content_key);
+        assert.equal(Buffer.compare(load_content_buf, original_content_buf), 0);
         console.log(`Content loaded, length ${load_content_buf.length}`);
         console.log(``);
     }
@@ -177,6 +232,15 @@ async function sample_3_content() {
         console.log(``);
     }
 
+    // Delete content from cloud storage...
+    {
+        console.log(`Deleting encrypted content from cloud storage...`);
+        const res = await storage.del(content_id);
+        assert.equal(res, true);
+        console.log(`Content deleted from cloud storage`);
+        console.log(``);
+    }
+
     await storage.disconnect();
 }
 
@@ -185,10 +249,17 @@ async function finalizer() {
     await revpop.disconnect();
 }
 
-exports.sample_content_permission = sample_3_content;
+exports.sample_content_permission = sample_3_content_ipfs;
+exports.sample_3_content_google_drive = sample_3_content_google_drive;
 exports.finalizer = finalizer;
 
-if (require.main === module) {
+async function sample_3_all_adapters() {
     const { run_func } = require('./index');
-    run_func(sample_3_content, finalizer);
+    await run_func(sample_3_content_ipfs, finalizer);
+    await run_func(sample_3_content_google_drive, finalizer);
+    await run_func(sample_3_content_s3, finalizer);    
+}
+
+if (require.main === module) {
+    sample_3_all_adapters();
 }

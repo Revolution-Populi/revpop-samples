@@ -1,0 +1,6 @@
+{
+    "region": "us-west-1",
+    "accessKeyId": "AIM_KEY_WITH_AmazonS3FullAccess",
+    "secretAccessKey": "REAL_KEY_SECRET",
+    "Bucket": "Bucket-name"
+}
