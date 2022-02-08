@@ -6,9 +6,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-ADD package.json /app/
-RUN cd /app && npm install && \
-    echo 'BLOCKCHAIN_URL=ws://blockchain:8090\nCLOUD_URL=http://cloud:5001' > /app/.env
-ADD . /app
+ADD . /app/
+RUN npm install
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
