@@ -7,6 +7,6 @@ RUN apt-get update \
 
 WORKDIR /app
 ADD . /app/
-RUN npm install
+RUN yarn install
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
