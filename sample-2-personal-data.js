@@ -290,7 +290,6 @@ async function finalizer() {
 exports.sample_personal_data = sample_2_personal_data;
 exports.finalizer = finalizer;
 
-
 async function sample_2_all_adapters() {
     const { run_func } = require('./index');
     await run_func(sample_2_personal_data_ipfs, finalizer);
