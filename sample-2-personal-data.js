@@ -287,7 +287,9 @@ async function finalizer() {
     await revpop.disconnect();
 }
 
-exports.sample_personal_data = sample_2_personal_data;
+exports.sample_personal_data = sample_2_personal_data_ipfs;
+exports.sample_personal_data_google_drive = sample_2_personal_data_google_drive;
+exports.sample_personal_data_s3 = sample_2_personal_data_s3;
 exports.finalizer = finalizer;
 
 async function sample_2_all_adapters() {

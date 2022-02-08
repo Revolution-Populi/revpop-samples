@@ -274,6 +274,7 @@ async function finalizer() {
 
 exports.sample_content_permission = sample_3_content_ipfs;
 exports.sample_3_content_google_drive = sample_3_content_google_drive;
+exports.sample_3_content_s3 = sample_3_content_s3;
 exports.finalizer = finalizer;
 
 async function sample_3_all_adapters() {
