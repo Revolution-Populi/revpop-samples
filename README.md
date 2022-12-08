@@ -70,7 +70,7 @@ This repository was tested in the following environment:
 * MongoDB 3
 * RevPop Blockchain latest release from https://gallery.ecr.aws/revpop/revpop-core
 
-# Run samples
+## Run samples
 
 To run a separate sample, run a command `node sample-name.js`. For example:
 ```
@@ -137,9 +137,9 @@ sample_4_votes         OK
     - Wait for maintenance time
     - Check if global parameter revpop_vote_mixture changed
 
-# Personal data formats
+## Personal data formats
 
-## Personal data blockchain record format
+### Personal data blockchain record format
 
     {
         subject_account: subject_acc.id,
@@ -165,13 +165,13 @@ Record stored by subject for operator access:
 - `subject_account` and `operator_account` must be not equal,
 - tuple `(subject_account, operator_account)` must be unique.
 
-## Personal data cloud storage record format
+### Personal data cloud storage record format
 
 Field `url` of blockchain record refers to ciphertext form of record in cloud storage.
 Ciphertext form can be decrypted to plaintext form using subject public key and operator private key and `nonce`.
 Plaintext form can be encrypted to ciphertext form using subject private key and operator public key and `nonce`.
 
-### Ciphertext form (example for MongoDB storage, formats in other storages may vary)
+#### Ciphertext form (example for MongoDB storage, formats in other storages may vary)
 
     {
         data: "MlETwxAtxUDynEqvHMZtcPU5v9pLl66mwT1EnkoXgik=:zwCAzJCRf1bSI............00oFx7Z71JiMEQ="
@@ -181,7 +181,7 @@ Fields:
 - `data` - two parts joined with ':' separator, (1) base64 of random 32-byte nonce used in encryption of plaintext form, and
 (2) base64 of JSON-stringified (in single line) and encrypted plaintext form of the personal data,
 
-### Plaintext form
+#### Plaintext form
 
     {
         content: {
@@ -218,10 +218,10 @@ Fields:
 - `missed_parts[].path` - dot-separated path of the missed part in `content`,
 - `missed_parts[].hash` - hash of the missed part and its salt (hex),
 
-# Contributing
+## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
-# License
-[GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
