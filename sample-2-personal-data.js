@@ -33,19 +33,20 @@ const google_drive_helper = require('./google-drive-adapter-helper.js');
 const bootstrap = require('./case0-bootstrap.js');
 
 async function sample_2_personal_data_ipfs() {
-    console.log(`Start IPFS test...`);
+    console.log('Start IPFS test...'.green);
     await sample_2_personal_data(new IPFSAdapter(process.env.CLOUD_URL));
-    console.log(`IPFS test finished.`);
+    console.log('IPFS test finished.'.green);
 }
 
 async function sample_2_personal_data_google_drive() {
-    console.log(`Start Google Drive test...`);
-    const oAuth2Client = await google_drive_helper.getGoogleoAuth2Client();
-    if (oAuth2Client === null)
+    console.log('Start Google Drive test...'.green);
+    const oAuth2Client = await google_drive_helper.getGoogleOAuth2Client();
+    if (oAuth2Client === null) {
         return;
+    }
 
     await sample_2_personal_data(new GoogleDriveAdapter({ auth: oAuth2Client, folder: "revpop" }));
-    console.log(`Google Drive test finished.`);
+    console.log('Google Drive test finished.'.green);
 }
 
 async function sample_2_personal_data_s3() {
@@ -292,15 +293,16 @@ async function finalizer() {
     await revpop.disconnect();
 }
 
-exports.sample_personal_data = sample_2_personal_data;
+exports.sample_personal_data = sample_2_personal_data_ipfs;
+exports.sample_personal_data_google_drive = sample_2_personal_data_google_drive;
+exports.sample_personal_data_s3 = sample_2_personal_data_s3;
 exports.finalizer = finalizer;
-
 
 async function sample_2_all_adapters() {
     const { run_func } = require('./index');
     await run_func(sample_2_personal_data_ipfs, finalizer);
     await run_func(sample_2_personal_data_google_drive, finalizer);
-    await run_func(sample_2_personal_data_s3, finalizer);    
+    await run_func(sample_2_personal_data_s3, finalizer);
 }
 
 if (require.main === module) {

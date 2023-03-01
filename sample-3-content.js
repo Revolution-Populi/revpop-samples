@@ -41,7 +41,7 @@ async function sample_3_content_ipfs() {
 
 async function sample_3_content_google_drive() {
     console.log(`Start Google Drive test...`);
-    const oAuth2Client = await google_drive_helper.getGoogleoAuth2Client();
+    const oAuth2Client = await google_drive_helper.getGoogleOAuth2Client();
     if (oAuth2Client === null)
         return;
         
@@ -121,18 +121,41 @@ async function sample_3_content(adapter) {
         console.log(``);
     }
 
+    async function download(url) {
+        return await axios.get(url, {
+            responseType: 'arraybuffer',
+            timeout: 5000
+        });
+    }
+
     // Download saved content by link
     {
         console.log(`Download encrypted content from cloud storage by url: ${save_content_result.url}`);
 
+        let response;
+
         try {
-            const response = await axios.get(save_content_result.url, { responseType:  'arraybuffer' });
-            // console.log(`Content loaded, length ${response.data.length}`);
-            const load_content_buf = decrypt_content(response.data, save_content_key)
-            assert.equal(Buffer.compare(load_content_buf, original_content_buf), 0);
-        } catch (error) {
-            assert.fail(`Failed to download content file: ` + error.message);
+            response = await download(save_content_result.url)
+        } catch (err) {
+            const url = new URL(save_content_result.url)
+            if ('ipfs.io' === url.hostname) {
+                url.protocol = 'http'
+                url.hostname = 'cloud'
+                url.port = '8080'
+            }
+            console.log(`Error occurred while loading content from remote storage: ${save_content_result.url}.
+                It's ok if your PC doesn't have access to internet. Trying to load content from local storage by url ${url.toString()}.`.yellow);
+
+            try {
+                response = await download(url.toString())
+            } catch (error) {
+                assert.fail(`Failed to download content file: ` + error.message);
+            }
         }
+
+        const load_content_buf = decrypt_content(response.data, save_content_key)
+        assert.equal(Buffer.compare(load_content_buf, original_content_buf), 0);
+
         console.log(`Content downloaded, successfully.`);
         console.log(``);
      }
@@ -257,13 +280,14 @@ async function finalizer() {
 
 exports.sample_content_permission = sample_3_content_ipfs;
 exports.sample_3_content_google_drive = sample_3_content_google_drive;
+exports.sample_3_content_s3 = sample_3_content_s3;
 exports.finalizer = finalizer;
 
 async function sample_3_all_adapters() {
     const { run_func } = require('./index');
     await run_func(sample_3_content_ipfs, finalizer);
     await run_func(sample_3_content_google_drive, finalizer);
-    await run_func(sample_3_content_s3, finalizer);    
+    await run_func(sample_3_content_s3, finalizer);
 }
 
 if (require.main === module) {

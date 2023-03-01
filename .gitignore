@@ -1,6 +1,9 @@
-.env
 /.idea
 /.vscode
+/.env
 /docker-compose.override.yml
 /node_modules
 /package-lock.json
+/yarn-error.log
+/google_oauth2_keys.json
+/google_token.json

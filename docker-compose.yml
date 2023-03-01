@@ -1,4 +1,4 @@
-version: "3"
+version: "3.2"
 services:
   blockchain:
     build:
@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     image: revpop-core-samples
     expose:
-    - 8090
+      - 8090
 
   # Cloud storage - IPFS
   cloud:
@@ -23,7 +23,7 @@ services:
       - blockchain
       - cloud
     volumes:
-      # Uncomment /app volume to sync project files with the container. Adjust the .env file to work in the container.
-      # - ./:/app
+      - ./:/app
+      - ./.env.docker:/app/.env:delegated
       - /app/node_modules
       - /app/demo/node_modules
