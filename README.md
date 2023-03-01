@@ -11,6 +11,12 @@ Requirements:
 * [Docker](https://docs.docker.com/get-docker/)
 * On Linux, you should also have [Docker-compose](https://docs.docker.com/compose/install/)
 
+Please rename example environment file from `.env.docker-compose` to `.env`  
+`cp .env.docker-compose .env`
+
+Then, uncomment line No 27 in `docker-compose.yml`.
+
+
 To run all samples using Docker, issue a command:
 ```
 docker-compose run --rm samples node index.js
@@ -58,11 +64,11 @@ Follow the steps in order to run samples on your machine.
 3. `npm install` or `yarn`
 4. [Use this genesis file to start blockchain](blockchain).
 5. For sample_2_personal_data and sample_3_content, that working with cloud storage adapters next prerequisits required:
-   * For IPFS adapter .env file should define CLOUD_URL that points out to the working IPFS node with open access.
+   * For IPFS adapter `.env` file should define CLOUD_URL that points out to the working IPFS node with open access.
      It can be started locally in docker see "Docker-compose configuration"
-   * For Google Drive one should obtain credentials for web applications, download and store them to google_oauth2_keys.json
+   * For Google Drive one should obtain credentials for web applications, download and store them to `google_oauth2_keys.json`
      How to obtain credentials: https://developers.google.com/identity/protocols/oauth2 
-   * For S3 file s3_auth.json should contain region, Bucket name and AWS IAM creds with AmazonS3FullAccess.
+   * For S3 file `s3_auth.json` should contain region, Bucket name and AWS IAM creds with AmazonS3FullAccess.
 
 This repository was tested in the following environment:
 * Ubuntu 18.04 Linux
